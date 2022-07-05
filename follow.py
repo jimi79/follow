@@ -10,6 +10,7 @@ import time
 import random
 import os
 import math
+import datetime
 
 debug = False
 
@@ -89,21 +90,40 @@ class Check:
 		#print("%0.2f (%0.2f %%) " % (newval, 100 * diffInPercent), end = "", flush = True)
 		print("%0.2f " % (newval), end = "", flush = True)
 		#print("line %d, %0.2f, before %0.2f, diff %0.2f%%" % (len(self.history), newval, oldval, diffInPercent * 100))
+		print("\033[0m", end = "")
 	
 	def getCurrentValue(self):
 		output = os.popen("curl --silent https://blockchain.info/ticker | jq '.USD.last'")
 		#output = os.popen("cat b | jq '.USD.last'")
 		return float(output.read())
 
+def displayTime():
+	print("%s: " % (datetime.datetime.now().strftime('%H:%M')), end = "")
+
 def run():
 	check = Check()
+	count = 0
+	delayNewTime = 600 # in secondes
+	delayNewItem = 60 # in seconds
+	if debug:
+		delayNewTime = 5 # in secondes
+		delayNewItem = 1 # in seconds
+	#lastItemShownAt = datetime.datetime.now()
+	#lastTimeShownAt = lastItemShownAt 
+	lastItemShownAt = datetime.datetime.fromordinal(1)
+	lastTimeShownAt = datetime.datetime.fromordinal(1)
 	while True:
-		check.run()
-		if debug:
-			time.sleep(0.2)
-		else:
-			time.sleep(60)
-		#time.sleep(1)
+		newTime = datetime.datetime.now()
+		diffItem = (newTime - lastItemShownAt).seconds
+		diffTime = (newTime - lastTimeShownAt).seconds
+		if diffTime >= delayNewTime:
+			print("")
+			displayTime()
+			lastTimeShownAt = newTime
+		if diffItem >= delayNewItem:
+			check.run()
+			lastItemShownAt = newTime
+		time.sleep(1)
 
 def test():
 	for i in range(0, 101):
