@@ -11,8 +11,7 @@ import random
 import os
 import math
 import datetime
-
-debug = False
+import sys
 
 class Value:
 
@@ -100,7 +99,7 @@ class Check:
 def displayTime():
 	print("%s: " % (datetime.datetime.now().strftime('%H:%M')), end = "")
 
-def run():
+def run(debug):
 	check = Check()
 	count = 0
 	delayNewTime = 600 # in secondes
@@ -140,4 +139,7 @@ def test():
 		#print(getColor(i, 0, 0))
 
 #test()
-run()
+if len(sys.argv) > 1:
+	debug = sys.argv[1] == 'debug'
+
+run(debug = debug)
