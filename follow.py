@@ -97,49 +97,58 @@ class Check:
 		return float(output.read())
 
 def displayTime():
-	print("%s: " % (datetime.datetime.now().strftime('%H:%M')), end = "")
+	#print("\033[30m\033[47m%s\033[0m " % (datetime.datetime.now().strftime('%H:%M')), end = "")
+	print("\033[07m%s\033[0m " % (datetime.datetime.now().strftime('%H:%M')), end = "")
 
-def run(debug):
-	check = Check()
-	count = 0
-	delayNewTime = 600 # in secondes
-	delayNewItem = 60 # in seconds
-	if debug:
-		delayNewTime = 5 # in secondes
-		delayNewItem = 1 # in seconds
-	#lastItemShownAt = datetime.datetime.now()
-	#lastTimeShownAt = lastItemShownAt 
-	lastItemShownAt = datetime.datetime.fromordinal(1)
-	lastTimeShownAt = datetime.datetime.fromordinal(1)
-	while True:
-		newTime = datetime.datetime.now()
-		diffItem = (newTime - lastItemShownAt).seconds
-		diffTime = (newTime - lastTimeShownAt).seconds
-		if diffTime >= delayNewTime:
-			print("")
-			displayTime()
-			lastTimeShownAt = newTime
-		if diffItem >= delayNewItem:
-			check.run()
-			lastItemShownAt = newTime
-		time.sleep(1)
+class Run:
+	def __init__(self, debug, delayNewTime = None, delayNewItem = None):
+		self.debug = debug
+		self.delayNewTime = delayNewTime
+		self.delayNewItem = delayNewItem
+		if self.delayNewTime == None:
+			if self.debug:
+				self.delayNewTime = 60 * 1 # every minute
+				self.delayNewItem = 1 # every 1 second (no use of getting lower, the udpate is every second)
+			else:
+				self.delayNewTime = 60 * 30 # every 30 minutes	
+				self.delayNewItem = 60 * 5 # every 5 minutes	
 
-def test():
-	for i in range(0, 101):
-		print("\033[38;5;%dmA" % (getGrayScale(i)), end = "")
-	print("")
-	for i in range(0, 101):
-		print("\033[38;5;%dmA" % (getColor(0, 0, i)), end = "")
-	print("")
-	for i in range(0, 101):
-		print("\033[38;5;%dmA" % (getColor(0, i, 0)), end = "")
-	print("")
-	for i in range(0, 101):
-		print("\033[38;5;%dmA" % (getColor(i, 0, 0)), end = "")
-		#print(getColor(i, 0, 0))
+	def run(self):
+		check = Check()
+		count = 0
+		#lastItemShownAt = datetime.datetime.now()
+		#lastTimeShownAt = lastItemShownAt 
+		lastItemShownAt = datetime.datetime.fromordinal(1)
+		lastTimeShownAt = datetime.datetime.fromordinal(1)
+		while True:
+			newTime = datetime.datetime.now()
+			diffItem = (newTime - lastItemShownAt).seconds
+			diffTime = (newTime - lastTimeShownAt).seconds
+			if diffTime >= self.delayNewTime:
+				displayTime()
+				lastTimeShownAt = newTime
+			if diffItem >= self.delayNewItem:
+				check.run()
+				lastItemShownAt = newTime
+			time.sleep(1)
+
+	def test():
+		for i in range(0, 101):
+			print("\033[38;5;%dmA" % (getGrayScale(i)), end = "")
+		print("")
+		for i in range(0, 101):
+			print("\033[38;5;%dmA" % (getColor(0, 0, i)), end = "")
+		print("")
+		for i in range(0, 101):
+			print("\033[38;5;%dmA" % (getColor(0, i, 0)), end = "")
+		print("")
+		for i in range(0, 101):
+			print("\033[38;5;%dmA" % (getColor(i, 0, 0)), end = "")
+			#print(getColor(i, 0, 0))
 
 #test()
+debug = False
 if len(sys.argv) > 1:
 	debug = sys.argv[1] == 'debug'
 
-run(debug = debug)
+Run(debug = debug).run()
