@@ -84,12 +84,9 @@ class Check:
 		if not isNeutral:
 			print("\007", end = "")
 
-		#print("%0.2f (%0.2f %%) " % (newval, 100 * diffInPercent), end = "", flush = True)
+		print("%0.2f" % (newval), end = "", flush = True)
 		print(self.getEscape(bgcolor, fgcolor), end = "")
-		#print("%0.2f (%0.2f %%) " % (newval, 100 * diffInPercent), end = "", flush = True)
-		print("%0.2f " % (newval), end = "", flush = True)
-		#print("line %d, %0.2f, before %0.2f, diff %0.2f%%" % (len(self.history), newval, oldval, diffInPercent * 100))
-		print("\033[0m", end = "")
+		print("\033[0m ", end = "")
 	
 	def getCurrentValue(self):
 		output = os.popen("curl --silent https://blockchain.info/ticker | jq '.USD.last'")
