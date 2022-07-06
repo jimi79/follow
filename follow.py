@@ -84,9 +84,10 @@ class Check:
 		if not isNeutral:
 			print("\007", end = "")
 
-		print("%0.2f" % (newval), end = "", flush = True)
-		print(self.getEscape(bgcolor, fgcolor), end = "")
-		print("\033[0m ", end = "")
+		print("%s" % self.getEscape(bgcolor, fgcolor), end = "")
+		print("%0.2f " % (newval), end = "")
+		print("\033[0m", end = "")
+		print("", end = "", flush = True)
 	
 	def getCurrentValue(self):
 		output = os.popen("curl --silent https://blockchain.info/ticker | jq '.USD.last'")
